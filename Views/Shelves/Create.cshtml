@@ -1,0 +1,91 @@
+﻿@model My_Library.Views.Shelves.ViewModels.CreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Shelf</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="@Model.Shelf.Name" class="control-label"></label>
+                <input asp-for="@Model.Shelf.Name" class="form-control" />
+                <span asp-validation-for="@Model.Shelf.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Shelf.Height" class="control-label"></label>
+                <input id="height-input" asp-for="@Model.Shelf.Height" class="form-control" />
+                <span asp-validation-for="@Model.Shelf.Height" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Shelf.LibraryId" class="control-label"></label>
+                <select id="librariesSelect" asp-for="@Model.Shelf.LibraryId" class="form-control">
+                    @foreach (var l in Model.Libraries)
+                    {
+                        <option data-emptyplace="@l.EmptyPlace" disabled="@(l.EmptyPlace <= 0)" value="@l.Id">
+                            @l.Name (מקום פנוי - @l.EmptyPlace)
+                            </option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<input type="hidden" id="errorMessage" value="@Model.ErrorModel?.Message" />
+@await Html.PartialAsync("Components/ErrorModal")
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        
+        var errorMessage = $('#errorMessage').val();
+        if (errorMessage) {
+            $('#librariesSelect').prop('disabled', true);
+            $('#message').text(errorMessage);
+            $('#errorModal').modal('show');
+        }
+
+        var allDisabled = true;
+        $('#librariesSelect option').each(function () {
+            if (!$(this).prop('disabled')) {
+                allDisabled = false;
+                return false;
+            }
+        });
+
+         if (allDisabled) {
+            $('#message').text('כל הספריות מלאות! יש צורך ליצור קודם ספריה חדשה');
+            $('#errorModal').modal('show');
+        }
+
+        var initialOption = $('#librariesSelect option:selected');
+        var initialEmptyPlace = initialOption.data('emptyplace');
+        if (initialEmptyPlace !== undefined) {
+            $('#height-input').attr('max', initialEmptyPlace);
+        }
+
+        $('#librariesSelect').change(function () {
+            var selectedOption = $(this).find(':selected');
+            var emptyPlace = selectedOption.data('emptyplace');
+            $('#height-input').attr('max', emptyPlace);
+        });
+
+    });
+</script>
+

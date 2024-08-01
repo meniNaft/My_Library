@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace My_Library.Models
 {
@@ -8,5 +9,7 @@ namespace My_Library.Models
 
         [Display(Name ="ז'אנר")]
         public string Name { get; set; }
+
+        public List<Library>? Libraries { get; set; }
     }
 }

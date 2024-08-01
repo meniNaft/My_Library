@@ -1,0 +1,46 @@
+﻿<div class="text-end modal fade"
+     id="setModal"
+     tabindex="-1"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header justify-content-between">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">הוספת ספריה</h1>
+                <button type="button"
+                        class="btn-close m-0"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">ז'אנר:</label>
+                       @*  <select class="form-select" id="libraryGenre" name="GenreId" required>
+                            @foreach (Genre g in Model.Genres)
+                            {
+                                <option value="@g.Id">@g.Name</option>
+                            }
+                        </select>*@
+                    </div>
+                    <div class="mb-3">
+                        <label for="message-text" class="col-form-label">שם ספריה:</label>
+                        <input type="text" class="form-control" id="recipient-name" />
+                        <label for="message-text" class="col-form-label">גובה הספריה:</label>
+                        <input type="number" class="form-control" id="recipient-name" />
+                        <label for="message-text" class="col-form-label">רוחב הספריה:</label>
+                        <input type="number" class="form-control" id="recipient-name" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    ביטול
+                </button>
+                <button type="button" class="btn btn-primary">הוספה</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,176 @@
+﻿@model My_Library.Views.Books.ViewModels.CreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Book</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="@Model.Book.Name" class="control-label"></label>
+                <input asp-for="@Model.Book.Name" class="form-control" />
+                <span asp-validation-for="@Model.Book.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">  
+                <label asp-for="@Model.Book.Width" class="control-label"></label>
+                <input id="width-input" asp-for="@Model.Book.Width" class="form-control" />
+                <span asp-validation-for="@Model.Book.Width" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Book.Height" class="control-label"></label>
+                <input id="height-input" asp-for="@Model.Book.Height" class="form-control" />
+                <span asp-validation-for="@Model.Book.Height" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Book.Genre" class="control-label"></label>
+                <select id="genre-select" asp-for="@Model.Book.Genre" class="form-control" asp-items="ViewBag.genreId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Book.ShelfId" class="control-label"></label>
+                <select id="shelf-select" asp-for="@Model.Book.ShelfId" class="form-control">
+                    <option value="">לא נבחר מדף</option>
+                    @foreach (var s in Model.Shelves)
+                    {
+                        <option data-genre="@s.Library.Genre.Id" data-height="@s.Height" data-emptyplace="@s.EmptyPlace" disabled="@(s.EmptyPlace <= 0)" value="@s.Id">
+                            @s.Name (מקום פנוי - @s.EmptyPlace, גובה - @s.Height)
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Book.SetId" class="control-label"></label>
+                <select id="set-select" asp-for="@Model.Book.SetId" class="form-control" asp-items="ViewBag.SetId">
+                    <option value="">ללא סט</option>
+                    @foreach (var s in Model.Sets)
+                    {
+                        <option data-genre="@s.GenreId" data-shlfId="@(s.ShelfId)" value="@s.Id">
+                            @s.Name
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<input type="hidden" id="errorMessage" value="@Model.ErrorModel?.Message" />
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+@await Html.PartialAsync("Components/ErrorModal")
+<script>
+    debugger;
+    $(document).ready(function () {
+        $('form').submit(function (event) {
+            event.preventDefault(); // Stop the form from submitting
+            $('#confirmModal').modal('show'); // Show the confirmation modal
+        });
+
+        // Handle the confirm button click event
+        $('#confirmSubmit').click(function () {
+            $('#confirmModal').modal('hide'); // Hide the modal
+            $('form').unbind('submit').submit(); // Unbind the submit event and submit the form
+        });
+
+        var errorMessage = $('#errorMessage').val();
+        if (errorMessage) {
+            $('#shelf-select').prop('disabled', true);
+            $('#message').text(errorMessage);
+            $('#errorModal').modal('show');
+        }
+
+        // function filterShelvesByGenreAndSet() {
+        //     var selectedGenre = $('#genre-select').val();
+        //     var selectedSetShelfId = $('#set-select option:selected').data('shlfid');
+        //     var shelvesEnabled = false;
+
+        //     $('#shelf-select option').each(function () {
+        //         var shelfGenre = $(this).data('genre');
+        //         var emptyPlace = $(this).data('emptyplace');
+        //         var shelfId = $(this).val();
+
+        //         if (shelfId === "") return;
+
+        //         if (selectedSetShelfId && selectedSetShelfId == shelfId) {
+        //             if (emptyPlace > 0) {
+        //                 $(this).prop('disabled', false);
+        //                 $('#shelf-select').val(shelfId); // Set this shelf as selected
+        //                 shelvesEnabled = true;
+        //             } else {
+        //                 $('#message').text('The selected set\'s shelf has no space available. Please choose another shelf or set.');
+        //                 $('#errorModal').modal('show');
+        //             }
+        //         } else if (!selectedSetShelfId && shelfGenre == selectedGenre && emptyPlace > 0) {
+        //             $(this).prop('disabled', false);
+        //             shelvesEnabled = true;
+        //         } else {
+        //             $(this).prop('disabled', true);
+        //         }
+        //     });
+
+        //     if (!shelvesEnabled) {
+        //         $('#shelf-select').val(''); // Set "Not Selected"
+        //     }
+        // }
+        
+        
+        function setMaxDimensions() {
+            var selectedOption = $('#shelf-select option:selected');
+            var emptyPlace = selectedOption.data('emptyplace');
+            var height = selectedOption.data('height');
+
+            if (emptyPlace !== undefined) {
+                $('#width-input').attr('max', emptyPlace);
+                $('#height-input').attr('max', height);
+            } else {
+                $('#width-input').removeAttr('max');
+                $('#height-input').removeAttr('max');
+            }
+        }
+
+        $('#shelf-select').change(function () {
+            setMaxDimensions();
+        });
+
+        // $('#genre-select').change(function () {
+        //     filterShelvesByGenreAndSet();
+        //     setMaxDimensions();
+        // });
+
+        // $('#set-select').change(function () {
+        //     filterShelvesByGenreAndSet();
+        //     setMaxDimensions();
+        // });
+
+        // Initial filtering and setting max dimensions
+        //filterShelvesByGenreAndSet();
+        setMaxDimensions();
+
+        // Check if there are no shelves available
+        if ($('#shelf-select option:not([disabled])').length === 0) {
+            $('#message').text('No available shelves for the selected genre or set. Please create a new shelf.');
+            $('#errorModal').modal('show');
+        }
+
+        // Check if no genre is selected
+        if (!$('#genre-select').val()) {
+            $('#message').text('Please select a genre to proceed.');
+            $('#errorModal').modal('show');
+        }
+
+    });
+</script>

@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@{
+    //var genres = Model.Genres;
+    //var Libraries = Model.Libraries;
+    //var Shelves = Model.Shelves;
+    //var Sets = Model.Sets;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,7 +15,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/My_Library.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body dir="rtl">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -20,12 +27,39 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Genres" asp-action="Index">ז'אנרים</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Libraries" asp-action="Index">ספריות</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Shelves" asp-action="Index">מדפים</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Books" asp-action="Index">ספרים</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Sets" asp-action="Index">סטים</a>
+                        </li>
+
                     </ul>
+                @*     <ul class="navbar-nav flex-grow-1">
+                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" data-bs-toggle="modal" data-bs-target="#libraryModal">הוסף ספריה</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" data-bs-toggle="modal" data-bs-target="#shelfModal">הוסף מדף</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" data-bs-toggle="modal" data-bs-target="#bookModal">הוסף ספר</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" data-bs-toggle="modal" data-bs-target="#setModal">הוסף סט</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" data-bs-toggle="modal" data-bs-target="#genreModal">הוסף ז'אנר</a>
+                        </li>
+                    </ul>*@
                 </div>
             </div>
         </nav>
@@ -33,6 +67,11 @@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
+            @await Html.PartialAsync("Components/AddGenreModal")
+            @await Html.PartialAsync("Components/AddLibraryModal")
+            @await Html.PartialAsync("Components/AddShelfModal")
+            @await Html.PartialAsync("Components/AddSetModal")
+            @await Html.PartialAsync("Components/AddBookModal")
         </main>
     </div>
 
@@ -44,6 +83,46 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+     @await RenderSectionAsync("Scripts", required: false)
+    @* <script>
+        $(document).ready(function () {
+            $('#bookModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var bookId = button.data('book-id'); // Extract info from data-* attributes if needed
+
+                // Example AJAX request to load data (if needed)
+                $.ajax({
+                    url: '/Books/GetModalData', // Your endpoint to get the data
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        // Populate the select lists with data from the server
+                        var shelfSelect = $('#shelf-select');
+                        shelfSelect.empty();
+                        $.each(data.shelves, function (index, shelf) {
+                            shelfSelect.append(new Option(shelf.name, shelf.id));
+                        });
+
+                        var setSelect = $('#set-select');
+                        setSelect.empty();
+                        $.each(data.sets, function (index, set) {
+                            setSelect.append(new Option(set.name, set.id));
+                        });
+
+                        var genreSelect = $('#genre-select');
+                        genreSelect.empty();
+                        $.each(data.genres, function (index, genre) {
+                            genreSelect.append(new Option(genre.name, genre.id));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+ *@
 </body>
 </html>

@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using My_Library.DAL;
+
 namespace My_Library
 {
     public class Program
@@ -5,6 +8,8 @@ namespace My_Library
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

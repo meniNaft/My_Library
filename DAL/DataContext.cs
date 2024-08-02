@@ -40,7 +40,7 @@ namespace My_Library.DAL
 
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.Set)
-                .WithMany() // Assuming Set can have multiple Books
+                .WithMany(s => s.Books) // Assuming Set can have multiple Books
                 .HasForeignKey(b => b.SetId)
                 .OnDelete(DeleteBehavior.SetNull); // Set to null if Set is deleted
 

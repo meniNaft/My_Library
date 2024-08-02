@@ -13,9 +13,11 @@ namespace My_Library.Models
         public double Width { get; set; }
         [Display(Name = "גובה")]
         public double Height { get; set; }
+        [Display(Name = "מדף")]
         public int ShelfId { get; set; }
         [Display(Name = "מדף")]
         public Shelf Shelf { get; set; }
+        [Display(Name = "סט")]
         public int? SetId { get; set; }
         [Display(Name = "סט")]
         public Set? Set { get; set; }

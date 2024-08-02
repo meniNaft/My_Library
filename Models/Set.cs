@@ -14,7 +14,7 @@ namespace My_Library.Models
         public int ShelfId 
         { 
             get {
-                int res = Books != null && Books.Count > 0 ? Books.First().Shelf.Id : 0;
+                int res = Books != null && Books.Count > 0 ? Books.First().ShelfId : 0;
                 return res;
             }
         }

@@ -59,21 +59,24 @@ namespace My_Library.Controllers
         // GET: Books/Create
         public IActionResult Create()
         {
-            ViewData["SetId"] = new SelectList(_context.Sets, "Id", "Name").Prepend(new SelectListItem { Text = "ללא סט", Value = "" });
-            ViewData["ShelfId"] = new SelectList(_context.Shelves, "Id", "Name");
+            
+            return View(GetCreateViewModel());
+        }
+
+        private CreateViewModel GetCreateViewModel(Book? book = null)
+        {
             ViewData["genreId"] = new SelectList(_context.Genres, "Id", "Name");
-            var isShelvesExist = _context.Shelves.Any();
-            var isGenreExist = _context.Genres.Any();
-            string message = null;
-            if (!isGenreExist) message = "יש ליצור קודם ז'אנרים ומדפים";
-            else if (!isShelvesExist) message = "יש ליצור קודם מדפים";
-            CreateViewModel model = new()
+            string message = string.Empty;
+            if (!_context.Genres.Any()) message = "יש ליצור קודם ז'אנרים ומדפים";
+            else if (!_context.Shelves.Any()) message = "יש ליצור קודם מדפים";
+            var res = new CreateViewModel
             {
-                ErrorModel = message != null ? new ErrorModel { Message = message } : null,
-                Shelves = _context.Shelves.Include(s => s.Library).Include(s => s.Library.Genre).ToList(),
-                Sets = _context.Sets.Include(s => s.Books).ToList()
+                ErrorModel = string.IsNullOrEmpty(message) ? new ErrorModel { Message = message } : null,
+                Shelves = _context.Shelves.Include(s => s.Books).Include(s => s.Library.Genre).ToList(),
+                Sets = _context.Sets.Include(s => s.Books).ToList(),
+                Book = book ?? null
             };
-            return View(model);
+            return res;
         }
 
         // POST: Books/Create
@@ -83,39 +86,18 @@ namespace My_Library.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Width,Height,ShelfId, SetId")] Book book)
         {
-            if (book.ShelfId > 0)
-            {
-                var res = await _context.Shelves.FirstOrDefaultAsync(s => s.Id == book.ShelfId);
-                if (res != null)
-                {
-                    book.Shelf = res;
-                }
-            }
+            if (book.ShelfId > 0) book.Shelf = await _context.Shelves.FirstOrDefaultAsync(s => s.Id == book.ShelfId);
+            if (book.SetId > 0) book.Set = await _context.Sets.FirstOrDefaultAsync(s => s.Id == book.SetId);
 
-            if (book.SetId != null && book.SetId > 0)
-            {
-                var res = await _context.Sets.FirstOrDefaultAsync(s => s.Id == book.SetId);
-                if (res != null)
-                {
-                    book.Set = res;
-                }
-            }
-            ModelState.Remove("Shelf");
+            ModelState.Remove("book.Shelf");
             if (ModelState.IsValid && book.Shelf != null)
             {
                 _context.Add(book);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SetId"] = new SelectList(_context.Sets, "Id", "Name", book.SetId).Prepend(new SelectListItem { Text="ללא סט", Value=null});
-            ViewData["ShelfId"] = new SelectList(_context.Shelves, "Id", "Name", book.ShelfId);
-            var isGenreExist = _context.Shelves.Count();
-            CreateViewModel model = new CreateViewModel
-            {
-                ErrorModel = isGenreExist == 0 ? new ErrorModel { Message = "יש ליצור קודם מדף" } : null,
-                Book = book
-            };
-            return View(model);
+
+            return View(GetCreateViewModel(book));
         }
 
         public async Task<JsonResult> GetShelvesBySet(int setId)

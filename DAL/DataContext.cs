@@ -24,19 +24,19 @@ namespace My_Library.DAL
                 .HasOne(l => l.Genre)
                 .WithMany(g => g.Libraries)
                 .HasForeignKey(l => l.GenreId)
-                .OnDelete(DeleteBehavior.Restrict); // No cascade delete
+                .OnDelete(DeleteBehavior.Cascade); // No cascade delete
 
             modelBuilder.Entity<Shelf>()
                 .HasOne(s => s.Library)
                 .WithMany(l => l.ShelfList) // Assuming Library can have multiple Shelves
                 .HasForeignKey(s => s.LibraryId)
-                .OnDelete(DeleteBehavior.Restrict); // No cascade delete
+                .OnDelete(DeleteBehavior.Cascade); // No cascade delete
 
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.Shelf)
                 .WithMany(s => s.Books) // Assuming Shelf can have multiple Books
                 .HasForeignKey(b => b.ShelfId)
-                .OnDelete(DeleteBehavior.Restrict); // No cascade delete
+                .OnDelete(DeleteBehavior.Cascade); // No cascade delete
 
             modelBuilder.Entity<Book>()
                 .HasOne(b => b.Set)
